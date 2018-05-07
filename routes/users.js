@@ -3,9 +3,9 @@
 const express = require('express');
 const router = express.Router();
 
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 
-const {User, userSchema} = require('../models/user');
+const User = require('../models/user');
 
 router.post('/', (req, res, next) => {
   const { fullname, username, password } = req.body;
@@ -25,9 +25,5 @@ router.post('/', (req, res, next) => {
     .catch(err => next(err));
 
 });
-
-userSchema.methods.validatePassword = function (password) {
-  return password === this.password;
-};
 
 module.exports = router;
