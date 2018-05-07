@@ -10,20 +10,23 @@ const User = require('../models/user');
 router.post('/', (req, res, next) => {
   const { fullname, username, password } = req.body;
 
-  const newItem = {
-    fullname,
-    username,
-    password
-  };
-  
-  console.log(newItem);
-
-  User.create(newItem)
-    .then(result => {
-      res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
+  User.hashPassword(password)
+    .then(digest => {
+      const newItem = {
+        fullname,
+        username: digest,
+        password
+      };
+      return User.create(newItem);
     })
-    .catch(err => next(err));
-
+    .then(result => {
+      return res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
+    })
+    .catch(err.code === 11000){
+      err = new Error ('The username already exists');
+      err.status = 400;
+    } 
+    next(err);
 });
 
 module.exports = router;
