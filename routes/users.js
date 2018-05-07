@@ -1,24 +1,33 @@
 'use strict';
 
 const express = require('express');
-const router = express.router();
+const router = express.Router();
 
 const mongoose = require('mongoose');
 
-const User = require('../models/user');
+const {User, userSchema} = require('../models/user');
 
-router.post('api/user', (res, req, next) => {
-  const {firstname, username, password} = req.body;
-  
+router.post('/', (req, res, next) => {
+  const { fullname, username, password } = req.body;
+
   const newItem = {
-    firstname,
+    fullname,
     username,
     password
   };
+  
+  console.log(newItem);
+
   User.create(newItem)
     .then(result => {
-      res.location(`${req.originalUrl}/${result.id}`).stauts(201).json(result);
+      res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
     })
     .catch(err => next(err));
 
 });
+
+userSchema.methods.validatePassword = function (password) {
+  return password === this.password;
+};
+
+module.exports = router;
