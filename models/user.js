@@ -19,7 +19,7 @@ userSchema.set('toObject', {
 });
 
 userSchema.methods.validatePassword = function (password) {
-  return password === this.password;
+  return bcrypt.compare(password, this.password);
 };
 
 userSchema.statics.hashPassword = function (password) {
