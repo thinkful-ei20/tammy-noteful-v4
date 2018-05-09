@@ -69,7 +69,7 @@ router.get('/:id', (req, res, next) => {
 router.post('/', (req, res, next) => {
   const { title, content, folderId, tags = [] } = req.body;
   const userId = req.user.id;
-
+  
   /***** Never trust users - validate input *****/
   if (!title) {
     const err = new Error('Missing `title` in request body');
@@ -110,6 +110,7 @@ router.put('/:id', (req, res, next) => {
   const { id } = req.params;
   const { title, content, folderId, tags = [] } = req.body;
   const { userId } = req.user.id;
+  const updateNote = {title, content, userId};
 
   /***** Never trust users - validate input *****/
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -130,6 +131,7 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
+
   if (tags) {
     tags.forEach((tag) => {
       if (!mongoose.Types.ObjectId.isValid(tag)) {
@@ -140,9 +142,12 @@ router.put('/:id', (req, res, next) => {
     });
   }
 
+  updateNote.folderId = folderId;
+  updateNote.tags = tags;
+
   //still need to validate that folders, notes, tags are accessible by user
 
-  Note.findByIdAndUpdate({ _id: id, userId}, { title, content, folderId, tags }, {new: true} )
+  Note.findOneAndUpdate({ _id: id, userId}, updateNote, {new: true} )
     .populate('tags')
     .then(result => {
       if (result) {
