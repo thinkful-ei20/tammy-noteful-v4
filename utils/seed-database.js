@@ -26,7 +26,7 @@ mongoose.connect(MONGODB_URI)
   //.then(results => console.log(results))
   .then((results) => {
     seedUser.forEach((user,i) => user.password = results[i]);
-      //i in forEach can iterate
+    //i in forEach can iterate
     return Promise.all([
       Note.insertMany(seedNotes),
 
