@@ -16,6 +16,17 @@ const seedUser = require('../db/seed/users');
 mongoose.connect(MONGODB_URI)
   .then(() => mongoose.connection.db.dropDatabase())
   .then(() => {
+    const hashPasswords = seedUser.map ( user => {
+      return  User.hashPassword(user.password);
+      
+    });
+    return Promise.all(hashPasswords);
+  })
+
+  //.then(results => console.log(results))
+  .then((results) => {
+    seedUser.forEach((user,i) => user.password = results[i]);
+      //i in forEach can iterate
     return Promise.all([
       Note.insertMany(seedNotes),
 
@@ -29,6 +40,7 @@ mongoose.connect(MONGODB_URI)
       User.createIndexes(),
 
     ]);
+
   })
   .then(() => mongoose.disconnect())
   .catch(err => {
