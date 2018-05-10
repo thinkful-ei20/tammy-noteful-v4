@@ -19,7 +19,22 @@ function createAuthToken(user){
   });
 }
 
-router.post('/', localAuth, (req, res) => {
+router.post('/login', localAuth, (req, res) => {
+  // const {username, password} = req.body;
+
+  // const requiredFields = ['username', 'password'];
+  // const missingField = requiredFields.find(field => !(field in req.body));
+  
+  // if(missingField) {
+  //   return res.status(422).json({
+  //     code: 422,
+  //     reason: 'Validation Error',
+  //     message: 'Missing Field',
+  //     location: missingField
+  //   });
+  // }
+
+
   const authToken = createAuthToken(req.user);
   res.json({authToken});
 });

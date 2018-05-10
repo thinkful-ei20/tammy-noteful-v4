@@ -46,7 +46,7 @@ app.use('/api/notes', notesRouter);
 app.use('/api/folders', foldersRouter);
 app.use('/api/tags', tagsRouter);
 app.use('/api/users', userRouter);
-app.use('/api/login', authRouter);
+app.use('/api', authRouter);
 
 // Catch-all 404
 app.use(function (req, res, next) {
@@ -61,7 +61,9 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.json({
     message: err.message,
-    error: app.get('env') === 'development' ? err : {}
+    error: app.get('env') === 'development' ? err : {},
+    // reason: err.reason ? err.reason : null,
+    // location: err.location ? err.location : null
   });
 });
 
