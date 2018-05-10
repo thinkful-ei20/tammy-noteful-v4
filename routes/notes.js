@@ -7,6 +7,9 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 
 const Note = require('../models/note');
+const Folder = require('../models/folder');
+const Tag = require('../models/tag');
+
 router.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
 
@@ -109,14 +112,18 @@ router.post('/', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   const { id } = req.params;
   const { title, content, folderId, tags = [] } = req.body;
-  const { userId } = req.user.id;
-  const updateNote = {title, content, userId};
+  const userId = req.user.id;
+  const updateNote = {title, userId, tags};
 
   /***** Never trust users - validate input *****/
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('The `id` is not valid');
     err.status = 400;
     return next(err);
+  }
+
+  if (content) {
+    updateNote.content = content;
   }
 
   if (!title) {
@@ -142,8 +149,25 @@ router.put('/:id', (req, res, next) => {
     });
   }
 
-  updateNote.folderId = folderId;
-  updateNote.tags = tags;
+  if (folderId) {
+    Folder.findOne({_id: folderId, userId})
+      .then(result => {
+        if (!result) {
+          const err = new Error('The `folder.id` is not valid');
+          err.status = 400;
+          updateNote.folderId = null;
+          return next(err);
+        } else
+          updateNote.folderId = folderId;
+        console.log(updateNote);
+        console.log(folderId);
+      });
+  }
+
+  console.log(updateNote);
+
+
+  // updateNote.tags = tags;
 
   //still need to validate that folders, notes, tags are accessible by user
 
