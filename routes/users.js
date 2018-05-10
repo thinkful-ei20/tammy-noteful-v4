@@ -74,6 +74,10 @@ router.post('/', (req, res, next) => {
       location: tooSmallField || tooLargeField
     });
   }
+  
+  if (fullname){
+    fullname.trim();
+  }
 
   User.hashPassword(password)
     .then(digest => {
