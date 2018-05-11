@@ -12,11 +12,8 @@ const seedFolders = require('../db/seed/folders');
 const User = require('../models/user');
 const seedUsers = require('../db/seed/users');
 
-
 const expect = chai.expect;
 chai.use(chaiHttp);
-
-
 
 describe('Noteful API - Folders', function () {
   let token;
@@ -33,7 +30,7 @@ describe('Noteful API - Folders', function () {
         return Promise.all([
           User.insertMany(seedUsers),
           Folder.insertMany(seedFolders),
-          Folder.createIndexes()
+          Folder.createIndexes()`Bea`
         ]);
       })
       .then (([users]) => {
